@@ -1,6 +1,11 @@
-extends layout
+extends default
 
-block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+block head
+    title Page Not Found
+block body
+    h1 Page Not Found
+    p.lead
+        | The resource you requested doesn't exist.
+    h1= title
+    h3= error.statusCode
+    p= error.data

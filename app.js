@@ -12,7 +12,6 @@ var express = require('express'),
 
 var configPath = process.env.CONFIG_PATH || './config';
 var config = require(configPath),
-    routes = require('./routes/index'),
     contact = require('./routes/contact'),
     signup = require('./routes/signup'),
     users = require('./routes/users'),
@@ -61,7 +60,7 @@ var jwtCheck = jwt({
     secret: config.cryptoKey
 });
 
-app.use(jwtCheck.unless({
+app.use(config.apiPath, jwtCheck.unless({
     path: [
         config.apiPath + '/login',
         config.apiPath + '/login/forgot',
@@ -88,7 +87,15 @@ app.passport = passport;
 
 require('./passport')(app);
 
-app.use(config.apiPath, routes);
+// APP views
+app.use('/', require('./views/index'));
+app.use('/signup/', require('./views/signup/index'));
+app.use('/login/', require('./views/login/index'));
+app.use('/login/forgot/', require('./views/login/forgot/index'));
+app.use('/login/reset/:tokenId', require('./views/login/reset/index'));
+app.use('/contact/', require('./views/contact/index'));
+
+// REST API
 app.use(config.apiPath + '/contact', contact);
 app.use(config.apiPath + '/signup', signup);
 app.use(config.apiPath + '/users', users);
@@ -119,9 +126,9 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-    app.use(function (err, req, res, next) {
-        res.status(err.status || 500).send({message: err.message});
-    });
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500).send({message: err.message});
+});
 }
 
 module.exports = app;

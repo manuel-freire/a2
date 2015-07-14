@@ -207,6 +207,16 @@ angular.module('myApp.controllers', ['ngStorage'])
                 }).error(function (data, status) {
                     console.error('Error on get /api/users/:userId: ' + JSON.stringify(data) + ', status: ' + status);
                 });
+
+                $http.get('/api/roles', {
+                    headers: {
+                        'Authorization': 'Bearer ' + $scope.$storage.user.token
+                    }
+                }).success(function (data) {
+                    $scope.appRoles = data;
+                }).error(function (data, status) {
+                    console.error('Error on get /api/roles: ' + JSON.stringify(data) + ', status: ' + status);
+                });
             };
 
             refresh();
@@ -221,11 +231,34 @@ angular.module('myApp.controllers', ['ngStorage'])
                     headers: {
                         'Authorization': 'Bearer ' + $scope.$storage.user.token
                     }
-                }, $scope.name)
-                    .success(function () {
-                        refresh();
-                    }).error(function (data, status) {
-                        console.error('Error on post /api/users/:userId: ' + JSON.stringify(data) + ', status: ' + status);
-                    });
+                }).success(function () {
+                    refresh();
+                }).error(function (data, status) {
+                    console.error('Error on post /api/users/:userId: ' + JSON.stringify(data) + ', status: ' + status);
+                });
+            };
+
+            $scope.addRole = function (role) {
+                $http.post('/api/users/' + $scope.uId + '/roles', [role], {
+                    headers: {
+                        'Authorization': 'Bearer ' + $scope.$storage.user.token
+                    }
+                }).success(function () {
+                    refresh();
+                }).error(function (data, status) {
+                    console.error('Error on post /api/users/:userId/roles: ' + JSON.stringify(data) + ', status: ' + status);
+                });
+            };
+
+            $scope.removeRole = function (role) {
+                $http.delete('/api/users/' + $scope.uId + '/roles/' + role, {
+                    headers: {
+                        'Authorization': 'Bearer ' + $scope.$storage.user.token
+                    }
+                }).success(function () {
+                    refresh();
+                }).error(function (data, status) {
+                    console.error('Error on post /api/users/:userId/roles: ' + JSON.stringify(data) + ', status: ' + status);
+                });
             };
         }]);
